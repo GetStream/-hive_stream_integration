@@ -10,7 +10,7 @@ from moderation import ModerationElement
 # The unique API Key for your text project
 
 
-def get_hive_response(input_text) -> ModerationElement:
+def get_hive_response(input_text,API_Key) -> ModerationElement:
     headers = {'Authorization': f'Token {API_Key}'}
     # Must be a string. This is also where you would insert metadata if desired.
     data = {'text_data': input_text}
