@@ -8,6 +8,7 @@ from hive import get_hive_response
 visual_threshold = Decimal(0.9)
 text_ban_threshold = 3
 text_flag_threshold = 1
+banned_classes = ['general_nsfw','general_suggestive', 'gun_in_hand','gun_not_in_hand']
 
 # from hive import get_hive_response
 from visual_moderation import get_visual_hive_response
@@ -20,7 +21,6 @@ your_api_secret = os.environ.get('api_secret')
 chat = StreamChat(api_key=your_api_key, api_secret=your_api_secret)
 chat.upsert_user({"id": "hive-bot", "role": "admin"})
 app = Starlette(debug=True)
-
 
 @app.route('/chatEvent', methods=['POST'])
 async def chatEvent(request):
@@ -44,13 +44,9 @@ async def chatEvent(request):
                         if Decimal(visual_threshold).compare(decimal_score) == -1:
                             print(class_["class"])
                             print(class_["score"])
-                            if class_["class"] == "general_nsfw":
-                                reason = "NSFW"
+                            if class_["class"] in banned_classes:
+                                reason = class_["class"]
                                 banned = True
-                            if class_["class"] == "general_suggestive":
-                                reason = "suggestive"
-                                banned = True
-
         hive_response = get_hive_response(
             text, hive_api_key)
         filters = hive_response["status"][0]["response"]["text_filters"]
